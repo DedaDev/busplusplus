@@ -5,11 +5,9 @@ export interface LiveVehicle {
     number: string,
     lat: number,
     lng: number,
-    updated_at: Date,
+    updated_at: string,
     angle: number
 }
-
-console.log(import.meta.env.VITE_BASE_URL);
 
 export const httpInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL

@@ -6,3 +6,11 @@
   width: 100%;
   height: 100vh;
 }
+
+.vehicle {
+    transition: all 30s linear;
+}
+
+#vehicle-wrapper {
+    transition: all 5s linear;
+}

@@ -1,7 +1,5 @@
-import {FC, useState} from "react";
-import {MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap, CircleMarker} from "react-leaflet";
-import {LatLngTuple} from "leaflet";
-import { stops } from "./assets/test.ts";
+import {FC, useEffect, useState} from "react";
+import {MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from "react-leaflet";
 import {httpInstance, LiveVehicle} from "./api/api.ts";
 import useSWR from "swr";
 import {divIconExample} from "./components/BusIcon.tsx";
@@ -27,21 +25,17 @@ function App() {
   const { data } = useSWR(
     "/bgplus/live",
     fetcher,
-    { refreshInterval: 10000 }
+    { refreshInterval: 5000 }
   );
 
-  console.log(zoom);
-
-
-  // function handleStopClick() {
-  //   console.log(zoom);
-  // }
+  const dark = "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png";
+  //const withLines = "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png";
 
   return (
-    <MapContainer preferCanvas={true} center={[stops[0].lat, stops[0].lng] as LatLngTuple} zoom={zoom} style={{ height: "100%", width: "100%" }} scrollWheelZoom={true}>
+    <MapContainer preferCanvas={true} center={{ lat:44.8044814, lng:20.4828214 }} zoom={zoom} style={{ height: "100%", width: "100%" }} scrollWheelZoom={true}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        url={dark}
       />
       <MapEvents setZoom={setZoom} />
       {/*{stops.map((busStop) => (*/}
@@ -53,18 +47,32 @@ function App() {
       {/*))}*/}
 
       {data && data.map((vehicle) => { 
-        return (<Marker icon={divIconExample(vehicle, zoom)} key={vehicle.garage_number} position={{ lat: vehicle.lat, lng: vehicle.lng }} >
-          <Popup>{vehicle.garage_number}</Popup>
+        return (<Marker eventHandlers={{ click: () => console.log(vehicle) }} icon={divIconExample(vehicle, zoom)} key={vehicle.garage_number} position={{ lat: vehicle.lat, lng: vehicle.lng }} >
+          <Popup>{vehicle.updated_at} {vehicle.number}</Popup>
         </Marker>);
       })}
-
-      {/*<Marker position={position as LatLngTuple}>*/}
-      {/*    <Popup>*/}
-      {/*        A pretty CSS3 popup. <br /> Easily customizable.*/}
-      {/*    </Popup>*/}
-      {/*</Marker>*/}
+      <GetUserLocation />
     </MapContainer>
   );
+}
+
+function GetUserLocation() {
+  const map = useMap();
+
+  function success({ coords } : GeolocationPosition) {
+    // TODO when a user is out of Belgrade region, change coordinates to the center
+    map.setView({lat: coords.latitude, lng: coords.longitude }, 15);
+  }
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success, () => console.log("err"));
+    } else {
+      console.log("Geolocation not supported");
+    }
+  },[]);
+
+  return null;
 }
 
 export default App;
