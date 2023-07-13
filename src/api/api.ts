@@ -9,9 +9,10 @@ export interface LiveVehicle {
     angle: number
 }
 
+console.log(import.meta.env.VITE_BASE_URL);
 
 export const httpInstance = axios.create({
-  baseURL: "http://localhost:4000"
+  baseURL: import.meta.env.VITE_BASE_URL
 });
 
 export function getPositions() {

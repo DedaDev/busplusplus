@@ -1,10 +1,10 @@
 import {FC, useState} from "react";
-import {MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap} from "react-leaflet";
+import {MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap, CircleMarker} from "react-leaflet";
 import {LatLngTuple} from "leaflet";
 import { stops } from "./assets/test.ts";
 import {httpInstance, LiveVehicle} from "./api/api.ts";
 import useSWR from "swr";
-import {divIconExample, IconBus} from "./components/BusIcon.tsx";
+import {divIconExample} from "./components/BusIcon.tsx";
 
 
 const MapEvents: FC<{ setZoom: (zoomLevel: number) => void}> = ({ setZoom }) => {
@@ -23,21 +23,22 @@ function fetcher(path: string) {
 }
 
 function App() {
-  const [zoom, setZoom] = useState(9);
+  const [zoom, setZoom] = useState(14);
   const { data } = useSWR(
     "/bgplus/live",
     fetcher,
     { refreshInterval: 10000 }
   );
 
+  console.log(zoom);
 
 
-  function handleStopClick() {
-    console.log("klik");
-  }
+  // function handleStopClick() {
+  //   console.log(zoom);
+  // }
 
   return (
-    <MapContainer preferCanvas={true} center={[stops[0].lat, stops[0].lng] as LatLngTuple} zoom={16} style={{ height: "100%", width: "100%" }} scrollWheelZoom={true}>
+    <MapContainer preferCanvas={true} center={[stops[0].lat, stops[0].lng] as LatLngTuple} zoom={zoom} style={{ height: "100%", width: "100%" }} scrollWheelZoom={true}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -52,7 +53,7 @@ function App() {
       {/*))}*/}
 
       {data && data.map((vehicle) => { 
-        return (<Marker icon={divIconExample(vehicle)} key={vehicle.garage_number} position={{ lat: vehicle.lat, lng: vehicle.lng }} >
+        return (<Marker icon={divIconExample(vehicle, zoom)} key={vehicle.garage_number} position={{ lat: vehicle.lat, lng: vehicle.lng }} >
           <Popup>{vehicle.garage_number}</Popup>
         </Marker>);
       })}
