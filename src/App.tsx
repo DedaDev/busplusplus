@@ -1,4 +1,4 @@
-import {FC, useEffect, useState} from "react";
+import {FC, useState} from "react";
 import {MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from "react-leaflet";
 import {httpInstance, LiveVehicle} from "./api/api.ts";
 import useSWR from "swr";
@@ -28,7 +28,9 @@ function App() {
     { refreshInterval: 5000 }
   );
 
-  const dark = "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png";
+  const api_key = "6c552f64-9a3c-4e38-be05-23468b248f99";
+
+  const dark = `https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${api_key}`;
   //const withLines = "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png";
 
   return (
@@ -38,41 +40,51 @@ function App() {
         url={dark}
       />
       <MapEvents setZoom={setZoom} />
-      {/*{stops.map((busStop) => (*/}
-      {/*    <Marker eventHandlers={{*/}
-      {/*        click: () => handleStopClick()*/}
-      {/*    }} key={busStop.id} position={[busStop.lat, busStop.lng]}>*/}
-      {/*        <Popup>{busStop.name}</Popup>*/}
-      {/*    </Marker>*/}
-      {/*))}*/}
-
-      {data && data.map((vehicle) => { 
+      {/*<StopsMarkers />*/}
+      {data && data.map((vehicle) => {
         return (<Marker eventHandlers={{ click: () => console.log(vehicle) }} icon={divIconExample(vehicle, zoom)} key={vehicle.garage_number} position={{ lat: vehicle.lat, lng: vehicle.lng }} >
           <Popup>{vehicle.updated_at} {vehicle.number}</Popup>
         </Marker>);
       })}
-      <GetUserLocation />
+      {/*<GetUserLocation />*/}
     </MapContainer>
   );
 }
 
-function GetUserLocation() {
-  const map = useMap();
+// function StopsMarkers() {
+//   const map = useMap();
+//   const markersInBounds = stops.filter(stop => {
+//     return map.getBounds().contains({ lat: stop.lat, lng: stop.lng });
+//   });
+//
+//   return <Fragment>
+//     {markersInBounds.map((busStop) => (
+//       <Marker key={busStop.id} position={[busStop.lat, busStop.lng]}>
+//         <Popup>
+//           <p>{busStop.name}</p>
+//           {busStop.id}</Popup>
+//       </Marker>
+//     ))}
+//   </Fragment>;
+// }
 
-  function success({ coords } : GeolocationPosition) {
-    // TODO when a user is out of Belgrade region, change coordinates to the center
-    map.setView({lat: coords.latitude, lng: coords.longitude }, 15);
-  }
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success, () => console.log("err"));
-    } else {
-      console.log("Geolocation not supported");
-    }
-  },[]);
-
-  return null;
-}
+// function GetUserLocation() {
+//   const map = useMap();
+//
+//   function success({ coords } : GeolocationPosition) {
+//     // TODO when a user is out of Belgrade region, change coordinates to the center
+//     map.setView({lat: coords.latitude, lng: coords.longitude }, 15);
+//   }
+//
+//   useEffect(() => {
+//     if (navigator.geolocation) {
+//       navigator.geolocation.getCurrentPosition(success, () => console.log("err"));
+//     } else {
+//       console.log("Geolocation not supported");
+//     }
+//   },[]);
+//
+//   return null;
+// }
 
 export default App;
