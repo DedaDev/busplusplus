@@ -28,16 +28,11 @@ function App() {
     { refreshInterval: 5000 }
   );
 
-  const api_key = "6c552f64-9a3c-4e38-be05-23468b248f99";
-
-  const dark = `https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${api_key}`;
-  //const withLines = "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png";
-
   return (
     <MapContainer preferCanvas={true} center={{ lat:44.8044814, lng:20.4828214 }} zoom={zoom} style={{ height: "100%", width: "100%" }} scrollWheelZoom={true}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url={dark}
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <MapEvents setZoom={setZoom} />
       {/*<StopsMarkers />*/}
